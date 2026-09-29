@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' http://192.168.7.1; base-uri 'none'; form-action 'none'">
+    <title>RapidJAM Web Direct Probe</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div class="brand-mark" aria-hidden="true">RJ</div>
+        <div>
+          <p class="eyebrow">TECHNICAL SPIKE · READ-ONLY</p>
+          <h1>Web Direct Probe</h1>
+          <p class="subtitle">公開 HTTPS ページから RapidJAM WebConfig へ直接接続できるかを確認します。</p>
+        </div>
+      </header>
+
+      <section class="notice notice-warning" aria-labelledby="safety-title">
+        <h2 id="safety-title">検証前の確認</h2>
+        <ul>
+          <li>これは製品アプリではありません。実機の設定保存・再起動は行いません。</li>
+          <li>電圧読み取り POST は MUX 選択 GPIO と ADC 入力を一時的に切り替えます。永続設定は保存しませんが、テスト中は操作を止め、影響を理解してから実行してください。</li>
+          <li>テストは HTTPS の公開オリジンで行ってください。localhost / file:// での成功は Web 単独化の合格になりません。</li>
+        </ul>
+      </section>
+
+      <section class="environment card" aria-labelledby="environment-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">TEST CONTEXT</p>
+            <h2 id="environment-title">実行環境</h2>
+          </div>
+          <span id="secure-badge" class="badge">確認中</span>
+        </div>
+        <dl class="environment-grid">
+          <div><dt>ページ URL</dt><dd id="page-origin">—</dd></div>
+          <div><dt>ブラウザー</dt><dd id="browser-info">—</dd></div>
+          <div><dt>実行時刻</dt><dd id="run-time">未実行</dd></div>
+        </dl>
+      </section>
+
+      <section class="card checks" aria-labelledby="checks-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">DIRECT REQUESTS</p>
+            <h2 id="checks-title">接続テスト</h2>
+          </div>
+          <span class="target">宛先固定 · 192.168.7.1</span>
+        </div>
+        <article class="check-row">
+          <div class="check-copy">
+            <h3>1. ファームウェア情報を GET</h3>
+            <p>設定を書き換えず、JSON 応答を読み取ります。</p>
+            <output id="get-result" class="result" aria-live="polite">未実行</output>
+          </div>
+          <button id="get-button" class="button button-primary" type="button">GET を実行</button>
+        </article>
+        <article class="check-row check-row-post">
+          <div class="check-copy">
+            <h3>2. Hall 電圧を JSON POST</h3>
+            <p>ブラウザーの OPTIONS 事前確認と POST を検証します。targetId 0 の一回読み取りです。</p>
+            <label class="confirm-label"><input id="post-confirm" type="checkbox"> MUX/ADC が一時的に切り替わることを理解し、読み取りを実行します</label>
+            <output id="post-result" class="result" aria-live="polite">未実行</output>
+          </div>
+          <button id="post-button" class="button button-secondary" type="button" disabled>POST を実行</button>
+        </article>
+      </section>
+
+      <section class="card log-card" aria-labelledby="log-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">LOCAL DIAGNOSTICS</p>
+            <h2 id="log-title">診断ログ</h2>
+          </div>
+          <button id="clear-button" class="button button-quiet" type="button">ログを消去</button>
+        </div>
+        <p class="helper">ログはこのページ内にのみ表示し、保存・送信しません。ネットワークエラーの原因は開発者ツールの Console / Network で確認してください。</p>
+        <ol id="log-list" class="log-list" aria-live="polite">
+          <li class="log-empty">テストを実行すると結果が表示されます。</li>
+        </ol>
+      </section>
+
+      <footer>
+        <strong>診断専用・非製品版</strong>
+        <span>GET: <code>/api/getFirmwareVersion</code> · POST: <code>/api/getHETriggerVoltage</code></span>
+      </footer>
+    </main>
+  </body>
+</html>
